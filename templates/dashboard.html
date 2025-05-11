@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Gateway - Dashboard</title>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --primary-dark: #3a5985;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --gray-100: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-300: #dee2e6;
+            --gray-400: #ced4da;
+            --gray-500: #adb5bd;
+            --gray-600: #6c757d;
+            --gray-700: #495057;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f7fa;
+            color: var(--dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info {
+            margin-right: 20px;
+            font-size: 14px;
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid transparent;
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            padding: 20px 0;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px 20px;
+            color: var(--gray-700);
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: var(--gray-100);
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--gray-200);
+            background-color: var(--gray-100);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-400);
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(74, 111, 165, 0.25);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .table th {
+            background-color: var(--gray-100);
+            font-weight: 600;
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--gray-100);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-color: #bee5eb;
+        }
+
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border-color: #ffeeba;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .api-info {
+            background-color: var(--gray-100);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+
+        .api-key {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            transform: translateY(-20px);
+            transition: transform 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 15px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray-600);
+        }
+
+        .modal-body {
+            padding: 15px;
+        }
+
+        .modal-footer {
+            padding: 15px;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-footer button {
+            margin-left: 10px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .message-bubble {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .message-received {
+            background-color: var(--gray-200);
+            margin-right: auto;
+            border-top-left-radius: 0;
+        }
+
+        .message-sent {
+            background-color: #d1e7fb;
+            margin-left: auto;
+            border-top-right-radius: 0;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: var(--gray-600);
+            display: block;
+            margin-top: 5px;
+        }
+
+        .message-sender {
+            font-weight: 600;
+        }
+
+        .messages-container {
+            overflow-y: auto;
+            max-height: 400px;
+            margin-bottom: 15px;
+        }
+
+        .messages-empty {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray-500);
+        }
+
+        #api-key-display {
+            word-break: break-all;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        .status-online {
+            background-color: var(--success);
+        }
+
+        .status-offline {
+            background-color: var(--danger);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 10px 0;
+            }
+
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            .sidebar-menu li {
+                margin-bottom: 0;
+                margin-right: 5px;
+            }
+
+            .sidebar-menu a {
+                padding: 8px 15px;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+
+            .sidebar-menu a:hover,
+            .sidebar-menu a.active {
+                border-left-color: transparent;
+                border-bottom-color: var(--primary);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ESP32 SMS Gateway</h1>
+        <div class="header-actions">
+            <div class="user-info">
+                <span id="username-display">Loading...</span>
+                <span class="status-indicator status-online" id="status-indicator"></span>
+                <span id="status-text">Connected</span>
+            </div>
+            <button id="logout-btn" class="btn btn-secondary">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-tab="dashboard-tab">Dashboard</a></li>
+                <li><a href="#" data-tab="send-sms-tab">Send SMS</a></li>
+                <li><a href="#" data-tab="inbox-tab">Inbox</a></li>
+                <li><a href="#" data-tab="outbox-tab">Outbox</a></li>
+                <li><a href="#" data-tab="logs-tab">Logs</a></li>
+                <li><a href="#" data-tab="api-tab">API Info</a></li>
+                <li><a href="#" data-tab="account-tab">Account</a></li>
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content active">
+                <div class="card">
+                    <div class="card-header">
+                        System Overview
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            Welcome to ESP32 SMS Gateway. Use the sidebar to navigate through different features.
+                        </div>
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-header">System Statistics</div>
+                                <div class="card-body">
+                                    <div class="stats-grid">
+                                        <div class="stat-item">
+                                            <h3>Messages Received</h3>
+                                            <p id="inbox-count">0</p>
+                                        </div>
+                                        <div class="stat-item">
+                                            <h3>Messages Sent</h3>
+                                            <p id="outbox-count">0</p>
+                                        </div>
+                                        <div class="stat-item">
+                                            <h3>System Logs</h3>
+                                            <p id="logs-count">0</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-header">Recent Activity</div>
+                                <div class="card-body">
+                                    <div id="recent-activity">
+                                        <p class="messages-empty">Loading recent activity...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Send SMS Tab -->
+            <div id="send-sms-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        Send SMS
+                    </div>
+                    <div class="card-body">
+                        <form id="sms-form">
+                            <div class="form-group">
+                                <label for="recipient">Recipient Phone Number</label>
+                                <input type="text" id="recipient" class="form-control" placeholder="+1234567890" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea id="message" class="form-control" placeholder="Type your message here..." required></textarea>
+                                <small id="character-count" class="form-text text-muted">0/160 characters</small>
+                            </div>
+                            <button type="submit" class="btn btn-success">Send Message</button>
+                        </form>
+                        <div id="send-result" class="alert" style="display: none;"></div>
+                        <div id="send-spinner" class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inbox Tab -->
+            <div id="inbox-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <span>Inbox Messages</span>
+                        <button id="refresh-inbox" class="btn btn-primary btn-sm">Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="inbox-spinner" class="spinner"></div>
+                        <div id="inbox-messages" class="messages-container">
+                            <p class="messages-empty">No messages in inbox</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Outbox Tab -->
+            <div id="outbox-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <span>Sent Messages</span>
+                        <button id="refresh-outbox" class="btn btn-primary btn-sm">Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="outbox-spinner" class="spinner"></div>
+                        <div id="outbox-messages" class="messages-container">
+                            <p class="messages-empty">No messages in outbox</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Logs Tab -->
+            <div id="logs-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        <span>System Logs</span>
+                        <button id="refresh-logs" class="btn btn-primary btn-sm">Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="logs-spinner" class="spinner"></div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Action</th>
+                                    <th>Details</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-table-body">
+                                <tr>
+                                    <td colspan="4" class="text-center">Loading logs...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Info Tab -->
+            <div id="api-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        API Information
+                    </div>
+                    <div class="card-body">
+                        <div class="api-info">
+                            <p>Your API Key: <span id="api-key-display" class="api-key">Loading...</span></p>
+                        </div>
+                        <h3>API Usage Examples</h3>
+                        <div class="api-examples">
+                            <h4>Sending SMS via API</h4>
+                            <pre><code>curl -X POST \
+  'http://[your-device-ip]/api/sms' \
+  -H 'Content-Type: application/json' \
+  -H 'X-API-Key: your_api_key' \
+  -d '{
+    "recipient": "+1234567890",
+    "message": "Hello from the API!"
+}'</code></pre>
+
+                            <h4>Getting Inbox Messages</h4>
+                            <pre><code>curl -X GET \
+  'http://[your-device-ip]/api/sms/inbox' \
+  -H 'X-API-Key: your_api_key'</code></pre>
+
+                            <h4>Getting Outbox Messages</h4>
+                            <pre><code>curl -X GET \
+  'http://[your-device-ip]/api/sms/outbox' \
+  -H 'X-API-Key: your_api_key'</code></pre>
+
+                            <h4>Getting System Logs</h4>
+                            <pre><code>curl -X GET \
+  'http://[your-device-ip]/api/logs' \
+  -H 'X-API-Key: your_api_key'</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Tab -->
+            <div id="account-tab" class="tab-content">
+                <div class="card">
+                    <div class="card-header">
+                        Account Information
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <p id="account-username">Loading...</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Role</label>
+                            <p id="account-role">Loading...</p>
+                        </div>
+                        <div class="form-group">
+                            <label>API Key</label>
+                            <p id="account-api-key">Loading...</p>
+                        </div>
+                        <button id="change-password-btn" class="btn btn-primary">Change Password</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="message-detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Message Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>From/To</label>
+                    <p id="modal-phone">Loading...</p>
+                </div>
+                <div class="form-group">
+                    <label>Date & Time</label>
+                    <p id="modal-datetime">Loading...</p>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <p id="modal-message">Loading...</p>
+                </div>
+                <div class="form-group">
+                    <label>Status</label>
+                    <p id="modal-status">Loading...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="change-password-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Change Password</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="change-password-form">
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm New Password</label>
+                        <input type="password" id="confirm-password" class="form-control" required>
+                    </div>
+                    <div id="password-error" class="alert alert-danger" style="display: none;"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary modal-close-btn">Cancel</button>
+                <button id="save-password-btn" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Socket.io library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const token = localStorage.getItem('sms_gateway_token');
+            const apiKey = localStorage.getItem('sms_gateway_api_key');
+            const username = localStorage.getItem('sms_gateway_username');
+            const role = localStorage.getItem('sms_gateway_role');
+
+            if (!token || !apiKey) {
+                window.location.href = '/';
+                return;
+            }
+
+            // Initialize Socket.IO connection
+            const socket = io();
+            let isConnected = false;
+
+            // DOM Elements
+            const statusIndicator = document.getElementById('status-indicator');
+            const statusText = document.getElementById('status-text');
+            const usernameDisplay = document.getElementById('username-display');
+            const inboxCount = document.getElementById('inbox-count');
+            const outboxCount = document.getElementById('outbox-count');
+            const logsCount = document.getElementById('logs-count');
+            const recentActivity = document.getElementById('recent-activity');
+            const characterCount = document.getElementById('character-count');
+
+            // Message detail modal elements
+            const messageDetailModal = document.getElementById('message-detail-modal');
+            const modalPhone = document.getElementById('modal-phone');
+            const modalDatetime = document.getElementById('modal-datetime');
+            const modalMessage = document.getElementById('modal-message');
+            const modalStatus = document.getElementById('modal-status');
+
+            // Change password modal elements
+            const changePasswordModal = document.getElementById('change-password-modal');
+            const passwordError = document.getElementById('password-error');
+
+            // Update user info display
+            usernameDisplay.textContent = username || 'Unknown User';
+            document.getElementById('account-username').textContent = username || 'Unknown User';
+            document.getElementById('account-role').textContent = role || 'User';
+            document.getElementById('account-api-key').textContent = apiKey || 'No API Key';
+            document.getElementById('api-key-display').textContent = apiKey || 'No API Key';
+
+            // Setup tab navigation
+            const tabLinks = document.querySelectorAll('.sidebar-menu a');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Remove active class from all tabs
+                    tabLinks.forEach(l => l.classList.remove('active'));
+                    tabContents.forEach(t => t.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    // Show corresponding content
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+
+                    // Refresh data on tab change
+                    if (tabId === 'inbox-tab') {
+                        fetchInbox();
+                    } else if (tabId === 'outbox-tab') {
+                        fetchOutbox();
+                    } else if (tabId === 'logs-tab') {
+                        fetchLogs();
+                    } else if (tabId === 'dashboard-tab') {
+                        fetchDashboardData();
+                    }
+                });
+            });
+
+            // Fetch and display dashboard data
+            function fetchDashboardData() {
+                // Fetch counts for dashboard
+                Promise.all([
+                    fetch('/api/sms/inbox', { headers: { 'X-API-Key': apiKey } }),
+                    fetch('/api/sms/outbox', { headers: { 'X-API-Key': apiKey } }),
+                    fetch('/api/logs', { headers: { 'X-API-Key': apiKey } })
+                ])
+                .then(responses => Promise.all(responses.map(response => response.json())))
+                .then(([inboxData, outboxData, logsData]) => {
+                    // Update counts
+                    inboxCount.textContent = inboxData.count;
+                    outboxCount.textContent = outboxData.count;
+                    logsCount.textContent = logsData.count;
+
+                    // Update recent activity
+                    updateRecentActivity(logsData.logs);
+                })
+                .catch(error => {
+                    console.error('Error fetching dashboard data:', error);
+                    addNotification('Failed to fetch dashboard data', 'danger');
+                });
+            }
+
+            // Update recent activity section
+            function updateRecentActivity(logs) {
+                if (!logs || logs.length === 0) {
+                    recentActivity.innerHTML = '<p class="messages-empty">No recent activity</p>';
+                    return;
+                }
+
+                // Sort logs by timestamp (newest first)
+                logs.sort((a, b) => b.timestamp - a.timestamp);
+
+                // Display only 5 most recent logs
+                const recentLogs = logs.slice(0, 5);
+
+                let activityHtml = '';
+
+                recentLogs.forEach(log => {
+                    const date = new Date(log.timestamp * 1000);
+                    const formattedDate = date.toLocaleString();
+                    let message = '';
+                    let alertClass = 'info';
+
+                    switch (log.action) {
+                        case 'send_sms':
+                            message = `SMS sent to ${log.recipient}`;
+                            alertClass = 'success';
+                            break;
+                        case 'receive_sms':
+                            message = `SMS received from ${log.sender}`;
+                            alertClass = 'info';
+                            break;
+                        case 'authentication':
+                            message = `User ${log.username} logged in`;
+                            alertClass = 'warning';
+                            break;
+                        default:
+                            message = `Action: ${log.action}`;
+                    }
+
+                    activityHtml += `
+                        <div class="alert alert-${alertClass}">
+                            <strong>${formattedDate}</strong>: ${message}
+                        </div>
+                    `;
+                });
+
+                recentActivity.innerHTML = activityHtml;
+            }
+
+            // Fetch inbox messages
+            function fetchInbox() {
+                document.getElementById('inbox-spinner').style.display = 'block';
+                const inboxMessages = document.getElementById('inbox-messages');
+
+                fetch('/api/sms/inbox', {
+                    headers: {
+                        'X-API-Key': apiKey
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('inbox-spinner').style.display = 'none';
+
+                    if (!data.messages || data.messages.length === 0) {
+                        inboxMessages.innerHTML = '<p class="messages-empty">No messages in inbox</p>';
+                        return;
+                    }
+
+                    let messagesHtml = '';
+
+                    // Sort messages by timestamp (newest first)
+                    data.messages.sort((a, b) => b.timestamp - a.timestamp);
+
+                    data.messages.forEach(message => {
+                        const date = new Date(message.timestamp * 1000);
+                        const formattedDate = date.toLocaleString();
+
+                        messagesHtml += `
+                            <div class="message-bubble message-received" data-message-id="${message.id}">
+                                <div class="message-sender">${message.sender}</div>
+                                <div>${message.message}</div>
+                                <span class="message-time">${formattedDate}</span>
+                            </div>
+                        `;
+                    });
+
+                    inboxMessages.innerHTML = messagesHtml;
+
+                    // Add click event to each message bubble
+                    document.querySelectorAll('.message-bubble').forEach(bubble => {
+                        bubble.addEventListener('click', function() {
+                            const messageId = this.getAttribute('data-message-id');
+                            const message = data.messages.find(m => m.id === messageId);
+
+                            if (message) {
+                                showMessageDetail(message, 'received');
+                            }
+                        });
+                    });
+                })
+                .catch(error => {
+                    document.getElementById('inbox-spinner').style.display = 'none';
+                    console.error('Error fetching inbox:', error);
+                    inboxMessages.innerHTML = '<p class="messages-empty">Error loading messages</p>';
+                });
+            }
+
+            // Fetch outbox messages
+            function fetchOutbox() {
+                document.getElementById('outbox-spinner').style.display = 'block';
+                const outboxMessages = document.getElementById('outbox-messages');
+
+                fetch('/api/sms/outbox', {
+                    headers: {
+                        'X-API-Key': apiKey
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('outbox-spinner').style.display = 'none';
+
+                    if (!data.messages || data.messages.length === 0) {
+                        outboxMessages.innerHTML = '<p class="messages-empty">No sent messages</p>';
+                        return;
+                    }
+
+                    let messagesHtml = '';
+
+                    // Sort messages by timestamp (newest first)
+                    data.messages.sort((a, b) => b.timestamp - a.timestamp);
+
+                    data.messages.forEach(message => {
+                        const date = new Date(message.timestamp * 1000);
+                        const formattedDate = date.toLocaleString();
+
+                        messagesHtml += `
+                            <div class="message-bubble message-sent" data-message-id="${message.id}">
+                                <div class="message-sender">To: ${message.recipient}</div>
+                                <div>${message.message}</div>
+                                <span class="message-time">${formattedDate}</span>
+                            </div>
+                        `;
+                    });
+
+                    outboxMessages.innerHTML = messagesHtml;
+
+                    // Add click event to each message bubble
+                    document.querySelectorAll('.message-bubble').forEach(bubble => {
+                        bubble.addEventListener('click', function() {
+                            const messageId = this.getAttribute('data-message-id');
+                            const message = data.messages.find(m => m.id === messageId);
+
+                            if (message) {
+                                showMessageDetail(message, 'sent');
+                            }
+                        });
+                    });
+                })
+                .catch(error => {
+                    document.getElementById('outbox-spinner').style.display = 'none';
+                    console.error('Error fetching outbox:', error);
+                    outboxMessages.innerHTML = '<p class="messages-empty">Error loading messages</p>';
+                });
+            }
+
+            // Fetch system logs
+            function fetchLogs() {
+                document.getElementById('logs-spinner').style.display = 'block';
+                const logsTableBody = document.getElementById('logs-table-body');
+
+                fetch('/api/logs', {
+                    headers: {
+                        'X-API-Key': apiKey
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('logs-spinner').style.display = 'none';
+
+                    if (!data.logs || data.logs.length === 0) {
+                        logsTableBody.innerHTML = '<tr><td colspan="4" class="text-center">No logs available</td></tr>';
+                        return;
+                    }
+
+                    let logsHtml = '';
+
+                    // Sort logs by timestamp (newest first)
+                    data.logs.sort((a, b) => b.timestamp - a.timestamp);
+
+                    data.logs.forEach(log => {
+                        const date = new Date(log.timestamp * 1000);
+                        const formattedDate = date.toLocaleString();
+
+                        let details = '';
+                        let statusBadge = '';
+
+                        if (log.action === 'send_sms') {
+                            details = `To: ${log.recipient}`;
+                            statusBadge = `<span class="badge badge-success">${log.status}</span>`;
+                        } else if (log.action === 'receive_sms') {
+                            details = `From: ${log.sender}`;
+                            statusBadge = `<span class="badge badge-info">${log.status}</span>`;
+                        } else if (log.action === 'authentication') {
+                            details = `User: ${log.username}`;
+                            statusBadge = `<span class="badge badge-warning">${log.status}</span>`;
+                        } else {
+                            details = `ID: ${log.id}`;
+                            statusBadge = `<span class="badge badge-secondary">${log.status || 'unknown'}</span>`;
+                        }
+
+                        logsHtml += `
+                            <tr>
+                                <td>${formattedDate}</td>
+                                <td>${log.action}</td>
+                                <td>${details}</td>
+                                <td>${statusBadge}</td>
+                            </tr>
+                        `;
+                    });
+
+                    logsTableBody.innerHTML = logsHtml;
+                })
+                .catch(error => {
+                    document.getElementById('logs-spinner').style.display = 'none';
+                    console.error('Error fetching logs:', error);
+                    logsTableBody.innerHTML = '<tr><td colspan="4" class="text-center">Error loading logs</td></tr>';
+                });
+            }
+
+            // Handle sending SMS
+            const smsForm = document.getElementById('sms-form');
+
+            if (smsForm) {
+                smsForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const recipient = document.getElementById('recipient').value;
+                    const message = document.getElementById('message').value;
+                    const sendResult = document.getElementById('send-result');
+                    const sendSpinner = document.getElementById('send-spinner');
+
+                    if (!recipient || !message) {
+                        sendResult.textContent = 'Please provide both recipient and message';
+                        sendResult.className = 'alert alert-danger';
+                        sendResult.style.display = 'block';
+                        return;
+                    }
+
+                    // Hide previous results and show spinner
+                    sendResult.style.display = 'none';
+                    sendSpinner.style.display = 'block';
+
+                    fetch('/api/sms', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-Key': apiKey
+                        },
+                        body: JSON.stringify({
+                            recipient: recipient,
+                            message: message
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to send SMS');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Hide spinner
+                        sendSpinner.style.display = 'none';
+
+                        // Show success message
+                        sendResult.textContent = 'SMS sent successfully';
+                        sendResult.className = 'alert alert-success';
+                        sendResult.style.display = 'block';
+
+                        // Clear form
+                        document.getElementById('message').value = '';
+                        updateCharacterCount();
+
+                        // Update outbox
+                        fetchOutbox();
+                        fetchDashboardData();
+                    })
+                    .catch(error => {
+                        // Hide spinner
+                        sendSpinner.style.display = 'none';
+
+                        // Show error message
+                        sendResult.textContent = 'Failed to send SMS: ' + error.message;
+                        sendResult.className = 'alert alert-danger';
+                        sendResult.style.display = 'block';
+
+                        console.error('Error sending SMS:', error);
+                    });
+                });
+            }
+
+            // Message character counter
+            const messageInput = document.getElementById('message');
+
+            if (messageInput) {
+                messageInput.addEventListener('input', updateCharacterCount);
+
+                function updateCharacterCount() {
+                    const length = messageInput.value.length;
+                    characterCount.textContent = `${length}/160 characters`;
+
+                    if (length > 160) {
+                        characterCount.style.color = 'var(--danger)';
+                    } else {
+                        characterCount.style.color = 'var(--gray-600)';
+                    }
+                }
+            }
+
+            // Show message details in modal
+            function showMessageDetail(message, type) {
+                if (type === 'received') {
+                    modalPhone.textContent = message.sender;
+                } else {
+                    modalPhone.textContent = message.recipient;
+                }
+
+                const date = new Date(message.timestamp * 1000);
+                modalDatetime.textContent = date.toLocaleString();
+                modalMessage.textContent = message.message;
+                modalStatus.textContent = message.status;
+
+                // Show modal
+                messageDetailModal.classList.add('show');
+            }
+
+            // Handle modal close buttons
+            document.querySelectorAll('.modal-close, .modal-close-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    messageDetailModal.classList.remove('show');
+                    changePasswordModal.classList.remove('show');
+                });
+            });
+
+            // Handle change password button
+            document.getElementById('change-password-btn').addEventListener('click', function() {
+                changePasswordModal.classList.add('show');
+            });
+
+            // Handle password change form
+            document.getElementById('save-password-btn').addEventListener('click', function() {
+                const currentPassword = document.getElementById('current-password').value;
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                // Reset error message
+                passwordError.style.display = 'none';
+
+                // Validate passwords
+                if (!currentPassword || !newPassword || !confirmPassword) {
+                    passwordError.textContent = 'All fields are required';
+                    passwordError.style.display = 'block';
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    passwordError.textContent = 'New passwords do not match';
+                    passwordError.style.display = 'block';
+                    return;
+                }
+
+                // In a real implementation, you would call an API endpoint to change the password
+                // For this demo, we'll simulate success
+                setTimeout(() => {
+                    passwordError.textContent = 'Password changed successfully';
+                    passwordError.className = 'alert alert-success';
+                    passwordError.style.display = 'block';
+
+                    // Clear form
+                    document.getElementById('current-password').value = '';
+                    document.getElementById('new-password').value = '';
+                    document.getElementById('confirm-password').value = '';
+
+                    // Close modal after a delay
+                    setTimeout(() => {
+                        changePasswordModal.classList.remove('show');
+                        passwordError.style.display = 'none';
+                        passwordError.className = 'alert alert-danger';
+                    }, 2000);
+                }, 1000);
+            });
+
+            // Handle refresh buttons
+            document.getElementById('refresh-inbox').addEventListener('click', fetchInbox);
+            document.getElementById('refresh-outbox').addEventListener('click', fetchOutbox);
+            document.getElementById('refresh-logs').addEventListener('click', fetchLogs);
+
+            // Handle logout
+            document.getElementById('logout-btn').addEventListener('click', function() {
+                localStorage.removeItem('sms_gateway_token');
+                localStorage.removeItem('sms_gateway_api_key');
+                localStorage.removeItem('sms_gateway_username');
+                localStorage.removeItem('sms_gateway_role');
+                window.location.href = '/';
+            });
+
+            // Socket.IO event listeners
+            socket.on('connect', function() {
+                isConnected = true;
+                updateConnectionStatus();
+            });
+
+            socket.on('disconnect', function() {
+                isConnected = false;
+                updateConnectionStatus();
+            });
+
+            socket.on('sms_received', function(data) {
+                // Add notification
+                addNotification(`New SMS received from ${data.sender}`, 'info');
+
+                // Update inbox if we're on that tab
+                const inboxTab = document.getElementById('inbox-tab');
+                if (inboxTab.classList.contains('active')) {
+                    fetchInbox();
+                }
+
+                // Update dashboard data
+                fetchDashboardData();
+            });
+
+            socket.on('sms_sent', function(data) {
+                // Add notification
+                addNotification(`SMS sent to ${data.recipient}`, 'success');
+
+                // Update outbox if we're on that tab
+                const outboxTab = document.getElementById('outbox-tab');
+                if (outboxTab.classList.contains('active')) {
+                    fetchOutbox();
+                }
+
+                // Update dashboard data
+                fetchDashboardData();
+            });
+
+            // Update connection status UI
+            function updateConnectionStatus() {
+                if (isConnected) {
+                    statusIndicator.classList.remove('status-offline');
+                    statusIndicator.classList.add('status-online');
+                    statusText.textContent = 'Connected';
+                } else {
+                    statusIndicator.classList.remove('status-online');
+                    statusIndicator.classList.add('status-offline');
+                    statusText.textContent = 'Disconnected';
+                }
+            }
+
+            // Add notification to the dashboard
+            function addNotification(message, type = 'info') {
+                const timestamp = new Date().toLocaleTimeString();
+                const notificationHtml = `
+                    <div class="alert alert-${type}">
+                        <strong>${timestamp}</strong>: ${message}
+                    </div>
+                `;
+
+                const emptyMsg = recentActivity.querySelector('.messages-empty');
+                if (emptyMsg) {
+                    recentActivity.innerHTML = notificationHtml;
+                } else {
+                    recentActivity.innerHTML = notificationHtml + recentActivity.innerHTML;
+                }
+
+                // Limit to 5 notifications
+                const notifications = recentActivity.querySelectorAll('.alert');
+                if (notifications.length > 5) {
+                    notifications[5].remove();
+                }
+            }
+
+            // Add code for simulating receiving an SMS (for testing purposes)
+            window.simulateReceiveSMS = function() {
+                const phoneNumber = `+${Math.floor(Math.random() * 9000000000) + 1000000000}`;
+                const message = 'This is a simulated incoming SMS message for testing purposes.';
+
+                fetch('/api/simulate/receive_sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sender: phoneNumber,
+                        message: message
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Simulated SMS received:', data);
+                })
+                .catch(error => {
+                    console.error('Error simulating SMS:', error);
+                });
+            };
+
+            // Initial connection status check
+            updateConnectionStatus();
+
+            // Setup API docs example code
+            const deviceIp = window.location.hostname + (window.location.port ? ':' + window.location.port : '');
+            const apiDocs = document.querySelectorAll('pre code');
+            apiDocs.forEach(code => {
+                code.innerHTML = code.innerHTML.replace(/\[your-device-ip\]/g, deviceIp);
+                code.innerHTML = code.innerHTML.replace(/your_api_key/g, apiKey);
+            });
+        });
+    </script>
+</body>
+</html>
